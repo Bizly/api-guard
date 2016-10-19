@@ -1,5 +1,5 @@
 {
-    "name": "chrisbjr/api-guard",
+    "name": "bizly/api-guard",
     "description": "A simple way of authenticating your APIs with API keys using Laravel",
     "keywords": [
         "api",
