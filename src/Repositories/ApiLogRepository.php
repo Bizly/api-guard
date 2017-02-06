@@ -2,8 +2,8 @@
 
 namespace Chrisbjr\ApiGuard\Repositories;
 
-use Eloquent;
 use Config;
+use Eloquent;
 
 /**
  * @property int api_key_id
@@ -23,6 +23,7 @@ abstract class ApiLogRepository extends Eloquent
         'method',
         'params',
         'ip_address',
+        'user_id',
     ];
 
     /**

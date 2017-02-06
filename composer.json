@@ -1,6 +1,6 @@
 {
-    "name": "bizly/api-guard",
-    "description": "A simple way of authenticating your APIs with API keys using Laravel",
+    "name": "petyots/api-guard",
+    "description": "A simple way of authenticating your APIs with API keys using Laravel. Forked from chrisbjr/api-guard And Working with L5.3.* ",
     "keywords": [
         "api",
         "rest",

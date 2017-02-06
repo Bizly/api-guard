@@ -4,20 +4,20 @@ namespace Chrisbjr\ApiGuard\Http\Middleware;
 
 use ApiGuardAuth;
 use App;
+use Bizly\Helpers\BizlyHelper;
 use Chrisbjr\ApiGuard\Builders\ApiResponseBuilder;
 use Chrisbjr\ApiGuard\Models\ApiKey;
 use Chrisbjr\ApiGuard\Models\ApiLog;
-use Exception;
-use Illuminate\Http\Request;
-use Log;
-use Auth;
-use Route;
-use Config;
-use Closure;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Input;
 use Chrisbjr\ApiGuard\Repositories\ApiKeyRepository;
 use Chrisbjr\ApiGuard\Repositories\ApiLogRepository;
+use Closure;
+use Config;
+use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Str;
+use Log;
+use Route;
 
 class ApiGuard
 {
@@ -46,7 +46,7 @@ class ApiGuard
     public function handle(Request $request, Closure $next, $serializedApiMethods = null)
     {
         // Unserialize parameters
-        if ( ! is_null($serializedApiMethods)) {
+        if (!is_null($serializedApiMethods)) {
             $this->apiMethods = unserialize($serializedApiMethods);
         }
 
@@ -79,12 +79,12 @@ class ApiGuard
 
             if (empty($key)) {
                 // It's still empty!
-                return $response->errorUnauthorized();
+                return $response->errorUnauthorized('Bizly API Access Denied : Api Key Not Provided.');
             }
 
             $apiKeyModel = App::make(config('apiguard.models.apiKey', 'Chrisbjr\ApiGuard\Models\ApiKey'));
 
-            if ( ! $apiKeyModel instanceof ApiKeyRepository) {
+            if (!$apiKeyModel instanceof ApiKeyRepository) {
                 Log::error('[ApiGuard] Your ApiKey model should be an instance of ApiKeyRepository.');
                 throw new Exception("You ApiKey model should be an instance of ApiKeyRepository.");
             }
@@ -92,7 +92,7 @@ class ApiGuard
             $this->apiKey = $apiKeyModel->getByKey($key, config('apiguard.rememberApiKeyDuration', 0));
 
             if (empty($this->apiKey)) {
-                return $response->errorUnauthorized();
+                return $response->errorUnauthorized('Bizly API Access Denied : Invalid API Key Provided. Please check your key or contact Bizly.');
             }
 
             // Authenticate the user of this API key
@@ -100,7 +100,7 @@ class ApiGuard
 
             // API key exists
             // Check level of API
-            if ( ! empty($this->apiMethods[$method]['level'])) {
+            if (!empty($this->apiMethods[$method]['level'])) {
                 if ($this->apiKey->level < $this->apiMethods[$method]['level']) {
                     return $response->errorForbidden();
                 }
@@ -109,26 +109,26 @@ class ApiGuard
 
         $apiLog = App::make(config('apiguard.models.apiLog', 'Chrisbjr\ApiGuard\Models\ApiLog'));
 
-        if ( ! $apiLog instanceof ApiLogRepository) {
+        if (!$apiLog instanceof ApiLogRepository) {
             Log::error('[ApiGuard] Your ApiLog model should be an instance of ApiLogRepository.');
             throw new Exception("You ApiLog model should be an instance of ApiLogRepository.");
         }
 
         // Then check the limits of this method
-        if ( ! empty($this->apiMethods[$method]['limits'])) {
+        if (!empty($this->apiMethods[$method]['limits'])) {
             if (config('apiguard.logging', true) === false) {
                 Log::warning("[ApiGuard] You specified a limit in the $method method but API logging needs to be enabled in the configuration for this to work.");
             }
             $limits = $this->apiMethods[$method]['limits'];
             // We get key level limits first
-            if ($this->apiKey != null && ! empty($limits['key'])) {
-                $keyLimit = ( ! empty($limits['key']['limit'])) ? $limits['key']['limit'] : 0;
+            if ($this->apiKey != null && !empty($limits['key'])) {
+                $keyLimit = (!empty($limits['key']['limit'])) ? $limits['key']['limit'] : 0;
                 if ($keyLimit == 0 || is_integer($keyLimit) == false) {
                     Log::warning("[ApiGuard] You defined a key limit to the " . Route::currentRouteAction() . " route but you did not set a valid number for the limit variable.");
                 } else {
-                    if ( ! $this->apiKey->ignore_limits) {
+                    if (!$this->apiKey->ignore_limits) {
                         // This means the apikey is not ignoring the limits
-                        $keyIncrement = ( ! empty($limits['key']['increment'])) ? $limits['key']['increment'] : config('apiguard.keyLimitIncrement', '1 hour');
+                        $keyIncrement = (!empty($limits['key']['increment'])) ? $limits['key']['increment'] : config('apiguard.keyLimitIncrement', '1 hour');
                         $keyIncrementTime = strtotime('-' . $keyIncrement);
                         if ($keyIncrementTime == false) {
                             Log::warning("[ApiGuard] You have specified an invalid key increment time. This value can be any value accepted by PHP's strtotime() method");
@@ -146,9 +146,9 @@ class ApiGuard
             }
 
             // Then the overall method limits
-            if ( ! empty($limits['method'])) {
+            if (!empty($limits['method'])) {
 
-                $methodLimit = ( ! empty($limits['method']['limit'])) ? $limits['method']['limit'] : 0;
+                $methodLimit = (!empty($limits['method']['limit'])) ? $limits['method']['limit'] : 0;
 
                 if ($methodLimit == 0 || is_integer($methodLimit) == false) {
                     Log::warning("[ApiGuard] You defined a method limit to the " . Route::currentRouteAction() . " route but you did not set a valid number for the limit variable.");
@@ -157,7 +157,7 @@ class ApiGuard
                     if ($this->apiKey != null && $this->apiKey->ignore_limits == true) {
                         // then we skip this
                     } else {
-                        $methodIncrement = ( ! empty($limits['method']['increment'])) ? $limits['method']['increment'] : config('apiguard.keyLimitIncrement', '1 hour');
+                        $methodIncrement = (!empty($limits['method']['increment'])) ? $limits['method']['increment'] : config('apiguard.keyLimitIncrement', '1 hour');
                         $methodIncrementTime = strtotime('-' . $methodIncrement);
                         if ($methodIncrementTime == false) {
                             Log::warning("[ApiGuard] You have specified an invalid method increment time. This value can be any value accepted by PHP's strtotime() method");
@@ -192,12 +192,15 @@ class ApiGuard
                     $this->apiLog->api_key_id = $this->apiKey->id;
                 }
 
+                // TODO : update this for Bizly Needs:
+                $user_id = BizlyHelper::current_user()->id ?? null;
                 $this->apiLog->create([
                     'api_key_id' => (isset($this->apiKey)) ? $this->apiKey->id : null,
-                    'route'      => Route::currentRouteAction(),
-                    'method'     => $request->getMethod(),
-                    'params'     => http_build_query(Input::all()),
+                    'route' => Route::currentRouteAction(),
+                    'method' => $request->getMethod(),
+                    'params' => json_encode(Input::all()),
                     'ip_address' => $request->getClientIp(),
+                    'user_id' => $user_id,
                 ]);
             }
         }

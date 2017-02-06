@@ -13,6 +13,8 @@ A simple way of authenticating your APIs with API keys using Laravel. This packa
 The concept for managing API keys is also taken from Phil Sturgeon's [codeigniter-restserver](https://github.com/philsturgeon/codeigniter-restserver).
 I've been looking for an equivalent for Laravel but did not find any so this is an implementation for that.
 
+## PATCHED TO WORK WITH LARAVEL 5.3.*
+
 ## Laravel 5 is finally supported!
 
 **Laravel 5.1.x to 5.2.x: `~3.*`
