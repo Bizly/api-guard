@@ -4,8 +4,8 @@ namespace Chrisbjr\ApiGuard\Http\Controllers;
 
 use ApiGuardAuth;
 use Chrisbjr\ApiGuard\Builders\ApiResponseBuilder;
-use Illuminate\Routing\Controller;
 use EllipseSynergie\ApiResponse\Laravel\Response;
+use Illuminate\Routing\Controller;
 
 class ApiGuardController extends Controller
 {
