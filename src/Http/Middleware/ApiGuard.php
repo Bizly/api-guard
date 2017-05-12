@@ -2,7 +2,6 @@
 
 namespace Chrisbjr\ApiGuard\Http\Middleware;
 
-use ApiGuardAuth;
 use App;
 use Bizly\Helpers\BizlyHelper;
 use Chrisbjr\ApiGuard\Builders\ApiResponseBuilder;
@@ -94,9 +93,6 @@ class ApiGuard
             if (empty($this->apiKey)) {
                 return $response->errorUnauthorized('Bizly API Access Denied : Invalid API Key Provided. Please check your key or contact Bizly.');
             }
-
-            // Authenticate the user of this API key
-            ApiGuardAuth::authenticate($this->apiKey);
 
             // API key exists
             // Check level of API

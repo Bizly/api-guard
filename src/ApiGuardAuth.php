@@ -27,20 +27,11 @@ class ApiGuardAuth
 
         // Problem. The user_id on the api key is not the user_id that we want to use. We desire the user id from JWT token.
         try {
-            $user = JWTAuth::parseToken()->authenticate();
+            return JWTAuth::parseToken()->authenticate();
         } catch (\Exception $e) {
             return false;
         }
 
-        if (!$this->auth->byId($user->id)) {
-            return false;
-        }
-
-        // if (!$this->auth->byId($apiKey->user_id)) {
-        //     return false;
-        // }
-
-        return $this->getUser();
     }
 
     /**
@@ -65,11 +56,10 @@ class ApiGuardAuth
     public function getUser()
     {
         try {
-            return $user = JWTAuth::parseToken()->authenticate();
+            return JWTAuth::parseToken()->authenticate();
         } catch (\Exception $e) {
             return null;
         }
-        return $this->auth->user();
     }
 
 }
