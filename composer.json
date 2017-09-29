@@ -1,6 +1,6 @@
 {
     "name": "bizly/api-guard",
-    "description": "A simple way of authenticating your APIs with API keys using Laravel. Forked from chrisbjr/api-guard And Working with L5.3.* ",
+    "description": "A simple way of authenticating your APIs with API keys using Laravel. Forked from chrisbjr/api-guard And Working with L5.5.* ",
     "keywords": [
         "api",
         "rest",
@@ -21,7 +21,7 @@
         }
     ],
     "require": {
-        "php": ">=5.5.9",
+        "php": ">=7.0.0",
         "illuminate/auth": ">=5.3",
         "illuminate/contracts": ">=5.3",
         "illuminate/http": ">=5.3",
@@ -44,6 +44,6 @@
             "Chrisbjr\\ApiGuard\\": "src"
         }
     },
-    "version" : "3.1.5",
+    "version" : "3.5.5",
     "minimum-stability": "stable"
 }

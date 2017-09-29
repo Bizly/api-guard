@@ -36,7 +36,7 @@ class DeleteApiKeyCommand extends Command
      *
      * @return mixed
      */
-    public function fire()
+    public function handle()
     {
         $key = $this->option('api-key');
 
